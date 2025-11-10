@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GrandMeta Uploads</title>
-  <meta name="description" content="Browse and share GrandMeta uploads with quick copy links." />
+  <title>GrandMeta Harness Files</title>
+  <meta name="description" content="Browse and share GrandMeta harness-related uploads with quick copy links." />
   <style>
     :root{
       --bg: #eef3ff;
@@ -26,7 +26,7 @@
     }
 
     header{
-      background: linear-gradient(120deg, rgba(108,99,255,0.8), rgba(0,212,255,0.8));
+      background: linear-gradient(120deg, rgba(108,99,255,0.9), rgba(0,212,255,0.9));
       color: #fff;
       padding: 24px 32px;
       text-align: center;
@@ -39,66 +39,175 @@
     .container{
       max-width: 900px;
       margin: 40px auto;
+      background: transparent;
+      padding: 0 16px 40px;
+    }
+
+    .section-title{
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 10px 4px;
+      color: #1d2440;
+    }
+
+    .accordion{
       background: var(--panel);
       border-radius: 16px;
       box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-      padding: 24px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      border: 1px solid #dde3ff;
     }
 
-    .file{
+    .acc-header{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      border-bottom:1px solid #e6e9f5;
-      padding:14px 0;
-      transition: background 0.2s;
+      padding:14px 18px;
+      cursor:pointer;
+      background:linear-gradient(120deg, rgba(108,99,255,0.06), rgba(0,212,255,0.03));
     }
 
-    .file:last-child{border-bottom:none;}
-    .file:hover{background:#f7f9ff;}
-
-    .file a{
-      color:var(--text);
-      text-decoration:none;
-      font-weight:600;
+    .acc-title-wrap{
       display:flex;
       align-items:center;
       gap:10px;
-      font-size:15px;
     }
 
-    .file a span.icon{
-      font-size:20px;
-      background:var(--btn);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
+    .acc-tag{
+      font-size: 13px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.04);
+      color: var(--muted);
     }
 
-    button{
+    .acc-header h2{
+      margin:0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .acc-arrow{
+      transition:transform 0.2s ease;
+      font-size: 18px;
+    }
+
+    .accordion.open .acc-arrow{
+      transform: rotate(90deg);
+    }
+
+    .acc-body{
+      max-height: 0;
+      overflow: hidden;
+      transition:max-height 0.25s ease;
+      background: #f7f9ff;
+    }
+
+    .accordion.open .acc-body{
+      max-height: 400px; /* large enough to show all rows */
+    }
+
+    .inner{
+      padding: 4px 16px 14px;
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 0;
+      border-bottom:1px solid #e0e5f7;
+    }
+
+    .row:last-child{border-bottom:none;}
+
+    .row-left{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      min-width:0;
+    }
+
+    .file-icon{
+      font-size: 22px;
+      flex:0 0 24px;
+    }
+
+    .row-meta{
+      min-width:0;
+    }
+
+    .row-title{
+      font-size:14px;
+      font-weight:600;
+      margin:0;
+    }
+
+    .row-sub{
+      font-size:12px;
+      color:var(--muted);
+      word-break:break-all;
+    }
+
+    .row-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
       background:var(--btn);
       color:#fff;
       border:none;
-      padding:8px 14px;
+      padding:7px 12px;
       border-radius:8px;
       font-weight:600;
       cursor:pointer;
       transition:all .2s ease;
-      font-size:14px;
+      font-size:13px;
       box-shadow:0 4px 10px rgba(0,0,0,0.15);
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    button:hover{
-      filter:brightness(1.1);
+    .btn.secondary{
+      background:transparent;
+      color:var(--text);
+      border:1px solid rgba(0,0,0,0.1);
+      box-shadow:none;
+    }
+
+    .btn:hover{
+      filter:brightness(1.05);
       transform:translateY(-1px);
     }
 
-    button.copied{
+    .btn.copied{
       background:linear-gradient(135deg,#4ade80,#16a34a);
+      color:#06261c;
     }
 
-    @media(max-width:600px){
-      .file{flex-direction:column;align-items:flex-start;gap:10px;}
-      button{align-self:flex-end;}
+    @media(max-width:650px){
+      .row{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
+      }
+      .row-actions{
+        align-self:flex-end;
+      }
+    }
+
+    .extras{
+      background: var(--panel);
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      border: 1px solid #dde3ff;
+      margin-top: 20px;
+      padding: 10px 16px 6px;
     }
 
     .toast{
@@ -115,65 +224,285 @@
       opacity:0;
       pointer-events:none;
       transition:opacity .3s ease;
+      z-index:20;
     }
     .toast.show{opacity:1;}
   </style>
 </head>
 <body>
-  <header>📂 GrandMeta Uploads</header>
+  <header>📂 GrandMeta Harness Files</header>
 
-  <div class="container" id="fileList"></div>
-  <div id="toast" class="toast">Link Copied!</div>
+  <div class="container">
+    <h3 class="section-title">Harness Groups</h3>
+    <div id="accordionContainer"></div>
+
+    <div id="extrasContainer" class="extras" style="display:none;">
+      <h3 class="section-title" style="margin-top:4px;">Additional Documents</h3>
+      <div id="extrasList"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Link copied!</div>
 
   <script>
     const baseURL = "https://grandmeta.github.io/uploads/";
-    const files = [
+
+    // All files present in this folder
+    const allFiles = [
+      "A06-95951-018-TS.pdf",
+      "A06-95951-Wiring.jpg",
       "A06-95951.pdf",
       "A06-95951_Wiring.pdf",
+      "A66-07962-Wiring.jpg",
       "A66-07962.pdf",
       "A66-07962_Wiring.pdf",
-      "A66-26638.pdf",
       "A66-26638 _Wiring.pdf",
-      "A66-26747.pdf",
-      "A66-26747_Wiring.pdf",
+      "A66-26638-000-TS.pdf",
+      "A66-26638-Wiring.jpg",
+      "A66-26638.pdf",
       "A66-26638_Powerflow.mp4",
-      "A66-26638_Repair.mp4"
+      "A66-26638_Repair.mp4",
+      "A66-26747-888-TS.pdf",
+      "A66-26747-Wiring.jpg",
+      "A66-26747.pdf",
+      "A66-26747_Wiring.pdf"
     ];
 
-    const container = document.getElementById("fileList");
+    // Harness IDs (groups)
+    const harnesses = [
+      "A06-95951-018",
+      "A66-26638-000",
+      "A66-26747-888"
+    ];
+
+    function getRootFromHarness(h) {
+      const parts = h.split("-");
+      if (parts.length >= 3) {
+        return parts.slice(0, 2).join("-");
+      }
+      return h;
+    }
+
+    // For each harness, define primary TS / Wiring JPG / Powerflow / Repair files
+    function getHarnessFiles(harness) {
+      const root = getRootFromHarness(harness);
+      const files = [];
+
+      // Troubleshoot (TS)
+      const tsFile = harness + "-TS.pdf";
+      if (allFiles.includes(tsFile)) {
+        files.push({
+          label: "Troubleshoot Document",
+          desc: tsFile,
+          icon: "📄",
+          file: tsFile
+        });
+      }
+
+      // Wiring Schematics (JPG)
+      const wiringJpg = root + "-Wiring.jpg";
+      if (allFiles.includes(wiringJpg)) {
+        files.push({
+          label: "Wiring Schematics (Image)",
+          desc: wiringJpg,
+          icon: "🧷",
+          file: wiringJpg
+        });
+      }
+
+      // PowerFlow
+      const powerFile = root + "_Powerflow.mp4";
+      if (allFiles.includes(powerFile)) {
+        files.push({
+          label: "PowerFlow Video",
+          desc: powerFile,
+          icon: "⚡",
+          file: powerFile
+        });
+      }
+
+      // Repair
+      const repairFile = root + "_Repair.mp4";
+      if (allFiles.includes(repairFile)) {
+        files.push({
+          label: "Repair Video",
+          desc: repairFile,
+          icon: "🛠️",
+          file: repairFile
+        });
+      }
+
+      return files;
+    }
+
+    const accordionContainer = document.getElementById("accordionContainer");
+    const extrasContainer = document.getElementById("extrasContainer");
+    const extrasList = document.getElementById("extrasList");
     const toast = document.getElementById("toast");
 
-    files.forEach(file => {
-      const fileLink = baseURL + encodeURIComponent(file.trim());
-      const icon = file.toLowerCase().endsWith(".mp4") ? "🎞️" : "📄";
-      const fileDiv = document.createElement("div");
-      fileDiv.className = "file";
-      fileDiv.innerHTML = `
-        <a href="${fileLink}" target="_blank"><span class="icon">${icon}</span>${file}</a>
-        <button onclick="copyLink('${fileLink}', this)">Copy Link</button>
+    // Track which files are already used in harness groups
+    const usedFiles = new Set();
+
+    function createAccordion(harness) {
+      const acc = document.createElement("div");
+      acc.className = "accordion";
+
+      const header = document.createElement("button");
+      header.type = "button";
+      header.className = "acc-header";
+      header.innerHTML = `
+        <div class="acc-title-wrap">
+          <h2>${harness}</h2>
+          <span class="acc-tag">Harness</span>
+        </div>
+        <span class="acc-arrow">▶</span>
       `;
-      container.appendChild(fileDiv);
+
+      const body = document.createElement("div");
+      body.className = "acc-body";
+
+      const inner = document.createElement("div");
+      inner.className = "inner";
+
+      const files = getHarnessFiles(harness);
+
+      files.forEach(f => {
+        usedFiles.add(f.file);
+        const row = document.createElement("div");
+        row.className = "row";
+        const fileLink = baseURL + encodeURIComponent(f.file);
+
+        row.innerHTML = `
+          <div class="row-left">
+            <div class="file-icon">${f.icon}</div>
+            <div class="row-meta">
+              <p class="row-title">${f.label}</p>
+              <div class="row-sub">${f.desc}</div>
+            </div>
+          </div>
+          <div class="row-actions">
+            <a class="btn secondary" href="${fileLink}" target="_blank" rel="noopener">Open</a>
+            <button class="btn" data-copy="${fileLink}">Copy Link</button>
+          </div>
+        `;
+        inner.appendChild(row);
+      });
+
+      if (files.length === 0) {
+        const row = document.createElement("div");
+        row.className = "row";
+        row.innerHTML = `
+          <div class="row-left">
+            <div class="file-icon">ℹ️</div>
+            <div class="row-meta">
+              <p class="row-title">No mapped files found for this harness.</p>
+              <div class="row-sub">Please verify uploaded filenames.</div>
+            </div>
+          </div>
+        `;
+        inner.appendChild(row);
+      }
+
+      body.appendChild(inner);
+      acc.appendChild(header);
+      acc.appendChild(body);
+
+      header.addEventListener("click", () => {
+        acc.classList.toggle("open");
+      });
+
+      acc.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button.btn[data-copy]");
+        if (!btn) return;
+        const url = btn.getAttribute("data-copy");
+        try {
+          await navigator.clipboard.writeText(url);
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          showToast("Link copied!");
+          setTimeout(() => {
+            btn.textContent = "Copy Link";
+            btn.classList.remove("copied");
+          }, 1500);
+        } catch (err) {
+          showToast("Failed to copy");
+        }
+      });
+
+      return acc;
+    }
+
+    function renderExtras() {
+      // files not used in harness sections
+      const leftovers = allFiles.filter(f => !usedFiles.has(f));
+
+      if (leftovers.length === 0) {
+        return;
+      }
+
+      extrasContainer.style.display = "block";
+
+      leftovers.forEach(file => {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        let icon = "📄";
+        const lower = file.toLowerCase();
+        if (lower.endsWith(".mp4")) icon = "🎞️";
+        else if (lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png")) icon = "🖼️";
+
+        const link = baseURL + encodeURIComponent(file);
+
+        row.innerHTML = `
+          <div class="row-left">
+            <div class="file-icon">${icon}</div>
+            <div class="row-meta">
+              <p class="row-title">${file}</p>
+              <div class="row-sub">Additional document</div>
+            </div>
+          </div>
+          <div class="row-actions">
+            <a class="btn secondary" href="${link}" target="_blank" rel="noopener">Open</a>
+            <button class="btn" data-copy="${link}">Copy Link</button>
+          </div>
+        `;
+
+        extrasList.appendChild(row);
+      });
+
+      extrasList.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button.btn[data-copy]");
+        if (!btn) return;
+        const url = btn.getAttribute("data-copy");
+        try {
+          await navigator.clipboard.writeText(url);
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          showToast("Link copied!");
+          setTimeout(() => {
+            btn.textContent = "Copy Link";
+            btn.classList.remove("copied");
+          }, 1500);
+        } catch (err) {
+          showToast("Failed to copy");
+        }
+      });
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("show"), 1200);
+    }
+
+    // Render harness accordions
+    harnesses.forEach(h => {
+      accordionContainer.appendChild(createAccordion(h));
     });
 
-    function copyLink(link, button) {
-      navigator.clipboard.writeText(link)
-        .then(() => {
-          button.textContent = 'Copied!';
-          button.classList.add('copied');
-          showToast();
-          setTimeout(() => {
-            button.textContent = 'Copy Link';
-            button.classList.remove('copied');
-          }, 1500);
-        })
-        .catch(err => alert('Failed to copy: ' + err));
-    }
-
-    function showToast() {
-      toast.classList.add('show');
-      clearTimeout(showToast.timeout);
-      showToast.timeout = setTimeout(() => toast.classList.remove('show'), 1200);
-    }
+    // Render leftover files as additional docs
+    renderExtras();
   </script>
 </body>
 </html>
